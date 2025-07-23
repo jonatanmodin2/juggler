@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Synced Juggler</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <video id="video" autoplay muted loop playsinline></video>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id') || '1';
+
+    const sources = {
+      '1': 'videos/left.mp4',
+      '2': 'videos/middle.mp4',
+      '3': 'videos/right.mp4'
+    };
+
+    const videoElement = document.getElementById('video');
+    const src = sources[id] || sources['1'];
+    videoElement.src = src;
+
+    function adjustVideoSize() {
+      const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+      const windowRatio = window.innerWidth / window.innerHeight;
+
+      if (aspectRatio > windowRatio) {
+        videoElement.style.width = '100%';
+        videoElement.style.height = 'auto';
+      } else {
+        videoElement.style.width = 'auto';
+        videoElement.style.height = '100%';
+      }
+    }
+
+    videoElement.addEventListener('loadedmetadata', () => {
+      adjustVideoSize();
+
+      function syncVideo() {
+        const now = Date.now() / 1000;
+        const loopLength = 5; // Anpassa efter video längd i sekunder
+        const offset = now % loopLength;
+
+        if (Math.abs(videoElement.currentTime - offset) > 0.05) {
+          videoElement.currentTime = offset;
+        }
+
+        if (videoElement.paused) {
+          videoElement.play();
+        }
+      }
+
+      syncVideo();
+
+      // Resync
+      setInterval(syncVideo, 1000);
+    });
+
+    window.addEventListener('resize', adjustVideoSize);
+  </script>
+</body>
+</html>
