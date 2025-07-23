@@ -12,6 +12,29 @@
       height: 100%;
       width: 100%;
       overflow: hidden;
+      font-family: 'Inter', sans-serif;
+    }
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+    }
+    #controls button {
+      margin-right: 8px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: #f0f0f0;
+      color: black;
+      border: none;
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    #controls button:hover {
+      background-color: #e0e0e0;
     }
     video {
       position: absolute;
@@ -22,8 +45,14 @@
       max-height: 100%;
     }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div id="controls">
+    <button onclick="location.search='?id=1'">vänster</button>
+    <button onclick="location.search='?id=2'">mitten</button>
+    <button onclick="location.search='?id=3'">höger</button>
+  </div>
   <video id="video" autoplay muted loop playsinline></video>
 
   <script>
