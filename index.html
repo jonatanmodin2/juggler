@@ -65,6 +65,9 @@
       '3': 'videos/right.mp4'
     };
 
+    // Justera tid mellan re-synk
+    const SYNC_INTERVAL_MS = 10000;
+
     const videoElement = document.getElementById('video');
     const src = sources[id] || sources['1'];
     videoElement.src = src;
@@ -101,8 +104,12 @@
 
       syncVideo();
 
-      // Resync
-      setInterval(syncVideo, 10000);
+      const now = Date.now();
+      const delay = SYNC_INTERVAL_MS - (now % SYNC_INTERVAL_MS);
+      setTimeout(() => {
+        syncVideo();
+        setInterval(syncVideo, SYNC_INTERVAL_MS);
+      }, delay);
     });
 
     window.addEventListener('resize', adjustVideoSize);
