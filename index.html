@@ -79,6 +79,40 @@
       transition: width 0.03s linear;
     }
   </style>
+  <style>
+    #offset-controls {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      font-family: monospace;
+      color: white;
+    }
+
+    #offset-controls #offset-label {
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    #offset-controls button {
+      padding: 2px 6px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      background: #f0f0f0;
+      color: black;
+      cursor: pointer;
+    }
+
+    #offset-controls button:hover {
+      background: #e0e0e0;
+    }
+  </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -92,6 +126,12 @@
   <div id="clock-container">
     <div id="clock"></div>
     <div id="progress"><div class="fill"></div></div>
+  </div>
+
+  <div id="offset-controls">
+    <button onclick="adjustOffset(-50)">−</button>
+    <button onclick="adjustOffset(50)">+</button>
+    <div id="offset-label">Manual offset: 0ms</div>
   </div>
 
   <script>
@@ -110,6 +150,15 @@
     const videoElement = document.getElementById('video');
     const src = sources[id] || sources['1'];
     videoElement.src = src;
+
+    let manualOffsetMs = parseInt(localStorage.getItem('manualOffsetMs')) || 0;
+    document.getElementById('offset-label').textContent = `Manual offset: ${manualOffsetMs}ms`;
+
+    function adjustOffset(delta) {
+      manualOffsetMs += delta;
+      localStorage.setItem('manualOffsetMs', manualOffsetMs);
+      document.getElementById('offset-label').textContent = `Manual offset: ${manualOffsetMs}ms`;
+    }
 
     function adjustVideoSize() {
       const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
@@ -130,7 +179,7 @@
       function syncVideo() {
         const now = Date.now() / 1000;
         const loopLength = 5; // Anpassa efter video längd i sekunder
-        const offset = now % loopLength;
+        const offset = ((now * 1000 + manualOffsetMs) % (loopLength * 1000)) / 1000;
 
         if (Math.abs(videoElement.currentTime - offset) > 0.05) {
           videoElement.currentTime = offset;
@@ -154,7 +203,7 @@
     window.addEventListener('resize', adjustVideoSize);
     // Digital clock display
     function updateClock() {
-      const now = new Date();
+      const now = new Date(Date.now() + manualOffsetMs);
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const seconds = String(now.getSeconds()).padStart(2, '0');
       const milliseconds = now.getMilliseconds();
