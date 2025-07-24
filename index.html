@@ -5,6 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Synced Juggler</title>
   <style>
+    #debug-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+    }
+
+    #debug-toggle button {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      background-color: #f0f0f0;
+      color: black;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    #debug-toggle button:hover {
+      background-color: #e0e0e0;
+    }
     html, body {
       margin: 0;
       padding: 0;
@@ -116,6 +137,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div id="debug-toggle">
+    <button onclick="toggleDebug()">Hide debug UI</button>
+  </div>
   <div id="controls">
     <button onclick="location.search='?id=1'">vänster</button>
     <button onclick="location.search='?id=2'">mitten</button>
@@ -218,6 +242,28 @@
     }
     setInterval(updateClock, 50);
     updateClock();
+
+    function toggleDebug() {
+      const clockContainer = document.getElementById('clock-container');
+      const offsetControls = document.getElementById('offset-controls');
+      const controls = document.getElementById('controls');
+      const toggleContainer = document.getElementById('debug-toggle');
+
+      clockContainer.style.display = 'none';
+      offsetControls.style.display = 'none';
+      controls.style.display = 'none';
+      toggleContainer.style.display = 'none';
+    }
   </script>
 </body>
 </html>
+    function toggleDebug() {
+      const clockContainer = document.getElementById('clock-container');
+      const offsetControls = document.getElementById('offset-controls');
+      const button = document.querySelector('#debug-toggle button');
+
+      const isVisible = clockContainer.style.display !== 'none';
+      clockContainer.style.display = isVisible ? 'none' : 'flex';
+      offsetControls.style.display = isVisible ? 'none' : 'flex';
+      button.textContent = isVisible ? 'Show debug UI' : 'Hide debug UI';
+    }
