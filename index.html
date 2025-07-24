@@ -46,16 +46,37 @@
     }
   </style>
   <style>
-    #clock {
+    #clock-container {
       position: absolute;
       bottom: 10px;
       left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #clock {
       font-size: 12px;
       color: white;
       background: rgba(0, 0, 0, 0.5);
       padding: 4px 8px;
       border-radius: 4px;
       font-family: monospace;
+    }
+
+    #progress {
+      height: 6px;
+      width: 100px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    #progress .fill {
+      height: 100%;
+      width: 0%;
+      background: white;
+      transition: width 0.03s linear;
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -68,7 +89,10 @@
   </div>
   <video id="video" autoplay muted loop playsinline></video>
 
-  <div id="clock"></div>
+  <div id="clock-container">
+    <div id="clock"></div>
+    <div id="progress"><div class="fill"></div></div>
+  </div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
@@ -133,8 +157,15 @@
       const now = new Date();
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const seconds = String(now.getSeconds()).padStart(2, '0');
-      const milliseconds = String(Math.floor(now.getMilliseconds() / 10)).padStart(2, '0');
-      document.getElementById('clock').textContent = `${minutes}:${seconds}:${milliseconds}`;
+      const milliseconds = now.getMilliseconds();
+      const msStr = String(Math.floor(milliseconds / 10)).padStart(2, '0');
+      document.getElementById('clock').textContent = `${minutes}:${seconds}:${msStr}`;
+
+      const percent = milliseconds / 10;
+      const fill = document.querySelector('#progress .fill');
+      if (fill) {
+        fill.style.width = `${percent}%`;
+      }
     }
     setInterval(updateClock, 50);
     updateClock();
